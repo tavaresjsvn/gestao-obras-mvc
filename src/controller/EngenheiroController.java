@@ -141,4 +141,14 @@ public class EngenheiroController {
 	    }
 	}
 
+	public ObraController getObraController() {
+		return obraController;
+	}
+
+	public void setObraController(ObraController obraController) {
+		this.obraController = obraController;
+	}
+	
+	
+
 }

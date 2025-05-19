@@ -1,5 +1,6 @@
 package persistence;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -59,6 +60,8 @@ private static final String CAMINHO_ARQUIVO = "data/obras.dat";
 
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(arquivo))) {
             return (List<Obra>) ois.readObject();
+        } catch (EOFException e) {
+            return new ArrayList<>();
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException("Erro ao carregar obras", e);
         }

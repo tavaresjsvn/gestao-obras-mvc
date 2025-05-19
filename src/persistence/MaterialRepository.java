@@ -52,6 +52,8 @@ public class MaterialRepository {
 
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(arquivo))) {
             return (List<Material>) ois.readObject();
+        } catch (EOFException e) {
+            return new ArrayList<>(); // Arquivo existe, mas está vazio
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException("Erro ao carregar materiais", e);
         }

@@ -1,0 +1,178 @@
+Estrutura Detalhada do Projeto MVC para Gestão de Obras Civis com Persistência em .txt
+
+📁 Estrutura de Pastas
+/gestao_obras_civis
+│
+├── /src
+│   ├── /model          (Camada Model - Domínio)
+│   │   ├── Obra.java
+│   │   ├── Engenheiro.java
+│   │   └── Material.java
+│   │
+│   ├── /view          (Camada View - Interface)
+│   │   ├── ObraView.java
+│   │   ├── EngenheiroView.java
+│   │   └── RelatorioView.java
+│   │
+│   ├── /controller    (Camada Controller - Lógica)
+│   │   ├── ObraController.java
+│   │   ├── EngenheiroController.java
+│   │   └── MaterialController.java
+│   │
+│   ├── /persistence   (Camada de Persistência)
+│   │   ├── ObraRepository.java
+│   │   ├── EngenheiroRepository.java
+│   │   └── MaterialRepository.java
+│   │
+│   └── /main
+│       ├── App.java    (Classe principal)
+│       └── Menu.java   (Gerenciamento do fluxo)
+│
+├── /data              (Armazenamento em .txt)
+│   ├── obras.txt
+│   ├── engenheiros.txt
+│   └── materiais.txt
+│
+└── README.md          (Documentação)
+🏗️ Camadas do MVC e Responsabilidades
+1. Camada Model (Domínio)
+Localização: /src/model
+
+Classes:
+
+Obra.java
+
+Atributos: codigo, nome, localizacao, orcamento, status, etapas, engenheirosAlocados, materiaisUtilizados
+
+Métodos: Getters/setters, validação de etapas (validarEtapa())
+
+Engenheiro.java
+
+Atributos: registroCREA, nome, especialidade, obrasAssociadas
+
+Métodos: Validação de CREA (validarCREA())
+
+Material.java
+
+Atributos: codigo, nome, quantidade, unidadeMedida
+
+Métodos: Cálculo de custo (calcularCusto())
+
+2. Camada View (Interface)
+Localização: /src/view
+
+Classes:
+
+ObraView.java
+
+Métodos:
+
+exibirDetalhesObra(Obra obra): Formata saída com alinhamento tabular
+
+mostrarListaObras(List<Obra>): Exibe tabela com código, nome e status
+
+RelatorioView.java
+
+Métodos:
+
+gerarRelatorioTxt(Obra obra): Cria arquivo resumo_[CODIGO].txt
+
+exibirAlertas(List<Obra> obrasAtrasadas): Destaca obras com status "Execução" > 6 meses
+
+3. Camada Controller (Lógica)
+Localização: /src/controller
+
+Classes:
+
+ObraController.java
+
+Métodos:
+
+cadastrarObra(Obra obra): Valida orçamento > 0 e etapas não vazias
+
+atualizarStatus(String codigo, String novoStatus): Bloqueia mudança sem engenheiro
+
+adicionarEtapa(String codigo, String etapa): Verifica ordem pré-definida
+
+EngenheiroController.java
+
+Métodos:
+
+alocarEngenheiro(String crea, String codigoObra): Impede alocação duplicada
+
+validarEspecialidade(String especialidade): Checa se é "Estrutural", "Hidráulica", etc.
+
+4. Camada de Persistência
+Localização: /src/persistence
+
+Classes:
+
+ObraRepository.java
+
+Métodos:
+
+salvarEmArquivo(List<Obra>): Escreve em data/obras.txt no formato:
+
+CODIGO;NOME;LOCAL;ORCAMENTO;STATUS;ETAPAS;ENGENHEIROS;MATERIAIS
+OBRA-001;Ponte ABC;Rio X;1500000.00;Execução;Fundacao,Estrutura;CREA-123,CREA-456;CONC-500,AÇO-200
+carregarDados(): Lê o arquivo e reconstrói objetos Obra
+
+MaterialRepository.java
+
+Implementa checagem de estoque ao salvar em data/materiais.txt
+
+5. Camada Main (Aplicação)
+Localização: /src/main
+
+Classes:
+
+App.java
+
+Inicializa o sistema:
+
+Carrega dados dos arquivos .txt
+
+Inicia Menu.java
+
+Menu.java
+
+Fluxo interativo:
+
+java
+while (true) {
+    exibirOpcoes(); // 1-Cadastrar obra, 2-Relatórios, etc.
+    int opcao = scanner.nextInt();
+    switch (opcao) {
+        case 1: ObraController.cadastrar(); break;
+        case 5: salvarDados(); System.exit(0);
+    }
+}
+🔄 Fluxo de Dados Típico
+Usuário seleciona "Cadastrar Obra" no Menu
+
+ObraController valida os dados
+
+ObraRepository persiste no arquivo obras.txt
+
+ObraView exibe confirmação ao usuário
+
+✅ Critérios de Qualidade
+Separação Clara:
+
+Model não acessa View
+
+Controller não contém lógica de persistência direta
+
+Acoplamento Mínimo:
+
+Repositórios só lidam com arquivos
+
+Views só formatam saída
+
+Extensibilidade:
+
+Para migrar para banco de dados, basta modificar os repositórios
+
+Documentação:
+
+Cada método tem comentário JavaDoc explicando regras (ex.: @throws IllegalArgumentException se CREA for inválido)

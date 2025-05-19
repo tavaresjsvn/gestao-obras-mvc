@@ -7,8 +7,7 @@ import java.util.Map;
 import java.io.Serializable;
 
 public class Obra implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+	
 	private int codigo;
 	private String nome;
 	private String localizacao;
@@ -19,6 +18,7 @@ public class Obra implements Serializable {
 	private LocalDate dataEntregaPrevista;
 	private LocalDate dataEntregaReal;
 	
+	private static final long serialVersionUID = 1L;
 	private ArrayList<String> etapas = new ArrayList<>();
 	private Map<String, Engenheiro> engenheirosAlocados = new HashMap<>();
 	private ArrayList<Material> materiaisUtilizados = new ArrayList<>();
@@ -41,10 +41,6 @@ public class Obra implements Serializable {
 	}
 	
 	public void alocarEngenheiro(Engenheiro e) {
-		if (this.isCancelada()) {
-		    throw new IllegalStateException("Não é possível fazer alocação, obra cancelada.");
-		}
-		
 		if(engenheirosAlocados.containsKey(e.getRegistroCREA())) {
 			throw new IllegalArgumentException("Engenheiro já alocado para está obra");
 		}
@@ -61,27 +57,14 @@ public class Obra implements Serializable {
 	}
 	
 	public void adicionarEtapa(String etapa) {
-		
-		if (this.isCancelada()) {
-		    throw new IllegalStateException("Não é possível modificar, obra cancelada.");
-		}
-		
         this.etapas.add(etapa);
     }
 
     public void adicionarEtapas(ArrayList<String> novasEtapas) {
-    	if (this.isCancelada()) {
-		    throw new IllegalStateException("Não é possível modificar, obra cancelada.");
-		}
-    	
         this.etapas.addAll(novasEtapas);
     }
 	
 	public void avancarEtapa() {
-		if (this.isCancelada()) {
-		    throw new IllegalStateException("Não é possível modificar, obra cancelada.");
-		}
-		
 		if (indiceEtapaAtual == etapas.size()) {
 			throw new IllegalArgumentException("Obra finalizada! Não tem mais etapas para avançar");
 		} else {
@@ -89,6 +72,50 @@ public class Obra implements Serializable {
 		}
 	}
 	
+	public void setOrcamento(double orcamento) {
+		if (orcamento <= 0) {
+	        throw new IllegalArgumentException("Orçamento deve ser maior que zero!");
+	    }
+	    
+		this.orcamento = orcamento;
+	}
+	
+	public void setCodigo(int codigo) {
+		this.codigo = codigo;
+	}
+	
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+	
+	public void setLocalizacao(String localizacao) {
+		this.localizacao = localizacao;
+	}
+	
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+	
+	public void setIndiceEtapaAtual(int indiceEtapaAtual) {
+		this.indiceEtapaAtual = indiceEtapaAtual;
+	}
+	
+	public void setDataInicio(LocalDate dataInicio) {
+		this.dataInicio = dataInicio;
+	}
+	
+	public void setDataEntregaPrevista(LocalDate dataEntregaPrevista) {
+		if (status == Status.CANCELADA || status == Status.ATRASADA || status == Status.CONCLUIDA) {
+		    throw new IllegalStateException("Não é possível modificar a data em obras finalizadas ou atrasadas.");
+		}
+		
+		this.dataEntregaPrevista = dataEntregaPrevista;
+	}
+	
+	public void setDataEntregaReal(LocalDate dataEntregaReal) {
+		this.dataEntregaReal = dataEntregaReal;
+	}
+
 	public String getEtapaAtual() {
 		return this.etapas.get(indiceEtapaAtual);
 	}
@@ -101,80 +128,32 @@ public class Obra implements Serializable {
 		return codigo;
 	}
 
-	public void setCodigo(int codigo) {
-		this.codigo = codigo;
-	}
-
 	public String getNome() {
 		return nome;
-	}
-
-	public void setNome(String nome) {
-		this.nome = nome;
 	}
 
 	public String getLocalizacao() {
 		return localizacao;
 	}
 
-	public void setLocalizacao(String localizacao) {
-		this.localizacao = localizacao;
-	}
-
 	public double getOrcamento() {
 		return orcamento;
-	}
-
-	public void setOrcamento(double orcamento) {
-		if (this.isCancelada()) {
-		    throw new IllegalStateException("Não é possível modificar, obra cancelada.");
-		}
-		
-		if (orcamento <= 0) {
-	        throw new IllegalArgumentException("Orçamento deve ser maior que zero!");
-	    }
-	    
-		this.orcamento = orcamento;
 	}
 
 	public Status getStatus() {
 		return status;
 	}
 
-	public void setStatus(Status status) {
-		this.status = status;
-	}
-
 	public int getIndiceEtapaAtual() {
 		return indiceEtapaAtual;
-	}
-
-	public void setIndiceEtapaAtual(int indiceEtapaAtual) {
-		if (this.isCancelada()) {
-		    throw new IllegalStateException("Não é possível modificar, obra cancelada.");
-		} 
-		
-		this.indiceEtapaAtual = indiceEtapaAtual;
 	}
 
 	public LocalDate getDataInicio() {
 		return dataInicio;
 	}
 
-	public void setDataInicio(LocalDate dataInicio) {
-		this.dataInicio = dataInicio;
-	}
-
 	public LocalDate getDataEntregaPrevista() {
 		return dataEntregaPrevista;
-	}
-
-	public void setDataEntregaPrevista(LocalDate dataEntregaPrevista) {
-		if (status == Status.CANCELADA || status == Status.ATRASADA || status == Status.CONCLUIDA) {
-		    throw new IllegalStateException("Não é possível modificar a data em obras finalizadas ou atrasadas.");
-		}
-		
-		this.dataEntregaPrevista = dataEntregaPrevista;
 	}
 
 	public LocalDate getDataEntregaReal() {
@@ -203,16 +182,20 @@ public class Obra implements Serializable {
 	    }
 	}
 	
-	public boolean isCancelada() {
-	    return status == Status.CANCELADA;
+	public void isCancelada() {
+	    if (this.getStatus() == Status.CANCELADA) {
+	      throw new IllegalStateException("Não é possível modificar, obra cancelada.");
+	    }
 	}
 
 	public boolean isAtrasada() {
 	    return status == Status.ATRASADA;
 	}
 
-	public boolean isFinalizada() {
-	    return status == Status.CONCLUIDA;
+	public void isFinalizada() {
+	    if(this.getStatus() == Status.CONCLUIDA) {
+	    	throw new IllegalStateException("Não é possível modificar, obra concluída.");
+	    }
 	}
 	
 	public boolean isEngenheiroAlocado(String registroCREA) {
@@ -230,10 +213,4 @@ public class Obra implements Serializable {
 	        orcamento
 	    );
 	}
-
-	public void setDataEntregaReal(LocalDate dataEntregaReal) {
-		this.dataEntregaReal = dataEntregaReal;
-	}
-
-	
 }

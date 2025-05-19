@@ -8,10 +8,11 @@ import java.util.regex.Pattern;
 
 public class Engenheiro implements Serializable {
 
-	private static final long serialVersionUID = 1L;
 	private String registroCREA;
 	private String nome;
 	private Especialidade especialidade;
+	
+	private static final long serialVersionUID = 1L;
 	private Map<Integer, Obra> obrasAssociadas = new HashMap<>();
 	
 	public Engenheiro(String registroCREA, String nome, Especialidade especialidade) {
@@ -53,10 +54,7 @@ public class Engenheiro implements Serializable {
 		
 		obrasAssociadas.remove(codigoObra);
 	}
-	public String getRegistroCREA() {
-		return registroCREA;
-	}
-
+	
 	public void setRegistroCREA(String registroCREA) {
 		if (!validarCREA(registroCREA)) {
 	       throw new IllegalArgumentException("CREA inválido! Campo ficou vazio, preencha o quanto antes.");
@@ -65,26 +63,30 @@ public class Engenheiro implements Serializable {
 		this.registroCREA = registroCREA;
 	}
 
-	public String getNome() {
-		return nome;
-	}
-
 	public void setNome(String nome) {
 		this.nome = nome;
-	}
-
-	public Especialidade getEspecialidade() {
-		return especialidade;
 	}
 
 	public void setEspecialidade(Especialidade novaEspecialidade) {
 		this.especialidade = novaEspecialidade;
 	}
 	
+	public String getRegistroCREA() {
+		return registroCREA;
+	}
+
+	public String getNome() {
+		return nome;
+	}
+	
+	public Especialidade getEspecialidade() {
+		return especialidade;
+	}
+	
 	public Map<Integer, Obra> getObrasAssociadas() {
 		return obrasAssociadas;
 	}
-
+	
 	@Override
 	public String toString() {
 	    return String.format("Engenheiro: %s (CREA: %s) - Especialidade: %s", this.nome, this.registroCREA, this.especialidade);
